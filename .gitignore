@@ -3,4 +3,5 @@
 .settings
 .checkstyle
 .lock
+*.org
 target
