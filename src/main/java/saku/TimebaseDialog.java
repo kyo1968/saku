@@ -7,25 +7,21 @@ import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 
-import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -33,6 +29,11 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
 
+/**
+ * タイムベース設定ダイアログ
+ *
+ * @version 1.00
+ */
 public final class TimebaseDialog extends JDialog {
 
 	/**
@@ -106,8 +107,10 @@ public final class TimebaseDialog extends JDialog {
 				JButton okButton = new JButton("Save");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						update();
-						dispose();
+						/* 設定内容を更新して保存 */
+						if(update()) {
+							dispose();
+						}
 					}
 				});
 				buttonPane.add(okButton);
@@ -117,7 +120,7 @@ public final class TimebaseDialog extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						dispose();
+						dispose();	/* キャンセル */
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
@@ -134,7 +137,7 @@ public final class TimebaseDialog extends JDialog {
 					JMenuItem mntmAddTimebase = new JMenuItem("Add");
 					mntmAddTimebase.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							addRow();
+							addRow();	/* タイムベース設定の追加 */
 						}
 					});
 					mnEdit.add(mntmAddTimebase);
@@ -159,9 +162,10 @@ public final class TimebaseDialog extends JDialog {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		
 		try {
+			/* 設定ファイルの読み込み */
 			if (mgr.load()) {
 				Map<String, Timebase> tml = mgr.getTimebase();
-				
+				/* テーブルモデルに設定 */
 				for (Entry<String, Timebase> e : tml.entrySet()) {
 					Object[] row = new Object[3];
 					
@@ -172,64 +176,95 @@ public final class TimebaseDialog extends JDialog {
 					model.addRow(row);
 				}
 				
-				fixColumnWidth();
+				fixColumnWidth();	/* 列幅の自動調整 */
 			}
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private void update() {
+
+	/**
+	 * 設定内容を保存する。
+	 */
+	private boolean update() {
 
 		TimebaseManager mgr = TimebaseManager.getInstance();
+		mgr.clear();	/* マネージャを初期化 */
 
-		mgr.clear();
-		
+		/* テーブルモデルを保存 */
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		
-		Vector<Vector<Object>> v = model.getDataVector();
-		for (Vector<Object> e : v) {
-			
-			String loc = (String)e.get(0);
-			String date = (String)e.get(1);
-			String respawn = (String)e.get(2);
-			
-			if (loc != null && !loc.isEmpty()
-					&& date != null && !date.isEmpty()
-					&& respawn != null && !respawn.isEmpty()) {
 				
-				try {
-					loc = loc.trim();
-					
-					if (!loc.isEmpty()) {
-						Timebase tb = new Timebase();
-						tb.setBaseTime(df.parse(date));
-						tb.setRespawn(Integer.parseInt(respawn));
-						mgr.putTimebase(loc, tb);
-					}
-				} catch (Exception e1) {
-					e1.printStackTrace();
+		@SuppressWarnings("unchecked")
+		Vector<Vector<Object>> v = (Vector<Vector<Object>>)model.getDataVector();
+		int i = 1; /* テーブル行カウンタ  */
+		for (Vector<Object> e : v) {
+
+			String loc = (String)e.get(0);		/* ロケーション */
+			String date = (String)e.get(1);		/* 基準時間 */
+			String respawn = (String)e.get(2);	/* リポップ時間 */
+			
+			try {
+				/* ロケーション名は必須 */
+				if (loc == null || loc.isEmpty() || loc.trim().isEmpty()) {
+					JOptionPane.showMessageDialog(this, "Location name required at line " + i + ".", 
+							"Error", JOptionPane.ERROR_MESSAGE);
+					return (false);
 				}
+				
+				loc = loc.trim();	/* ロケーションを整形 */
+				
+				/* 設定項目が未設定のものはエラー */
+				if (date == null || date.isEmpty()
+						|| respawn == null || respawn.isEmpty()) {
+					JOptionPane.showMessageDialog(this, "Emtpy value is not allowed at line " + i + ".",
+							"Error", JOptionPane.ERROR_MESSAGE);
+					return (false);
+				}
+				
+				Timebase tb = new Timebase();
+				tb.setBaseTime(df.parse(date));
+				tb.setRespawn(Integer.parseInt(respawn));
+				mgr.putTimebase(loc, tb);
+				
+				i++;
+				
+			} catch (Exception e1) {
+				JOptionPane.showMessageDialog(this, "Invalid timebase setting at line " + i + ".",
+						"Error", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+				return (false);
 			}
 		}
 		
 		try {
-			mgr.save();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			mgr.save();		/* ファイルに保存 */
+			return (true);
+			
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Cannot save basetime", "Error", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+			return (false);
 		}
 	}
 	
+	/**
+	 * テーブルにタイムベースを追加する。
+	 */
 	private void addRow () {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.addRow(new Object[3]);
 	}
 	
+	/**
+	 * 列幅を調整する。
+	 */
 	private void fixColumnWidth () {
+		/* 列ごとに幅を計算 */
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			TableColumn tc = table.getColumnModel().getColumn(i);
 			
+			/* 各行の幅を計算 */
 			int max = 0;
 			int vrows = table.getRowCount();
 			for (int j = 0; j < vrows; j++) {
@@ -237,11 +272,14 @@ public final class TimebaseDialog extends JDialog {
 				Object value = table.getValueAt(j,  i);
 				Component c = r.getTableCellRendererComponent(table, value, false,  false, j, i);
 				int w = c.getPreferredSize().width;
+				
+				/* 最大幅を記録 */
 				if (max < w) {
 					max = w;
 				}
 			}
 			
+			/* 最大幅を列幅に設定 */
 			tc.setPreferredWidth(max + 1);
 		}
 	}

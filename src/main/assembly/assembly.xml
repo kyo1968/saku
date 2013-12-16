@@ -7,19 +7,20 @@
 
 	<fileSets>
 		<fileSet>
-			<directory>conf</directory>
-			<outputDirectory>/conf</outputDirectory>
+			<!--<directory>/</directory> -->
+			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>**/*</include>
+				<include>timebase.dat</include>
+				<include>Readme.txt</include>
 			</includes>
 		</fileSet>
-</fileSets>
+	</fileSets>
 
 	<dependencySets>
 		<dependencySet>
 			<unpack>false</unpack>
 			<scope>compile</scope>
-			<outputDirectory>/lib</outputDirectory>
+			<outputDirectory>/</outputDirectory>
 		</dependencySet>
 	</dependencySets>
 </assembly>

@@ -23,7 +23,7 @@ public class TimebaseManager {
 	/**
 	 * 保存ファイル名
 	 */
-	private static final String fileName = "timebase.dat";
+	public static final String fileName = "timebase.dat";
 	
 	/**
 	 * タイムベースのマップ

@@ -3,6 +3,7 @@ package saku;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Font;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.JMenuBar;
@@ -18,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.RowSorter;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -31,10 +34,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
+
 import javax.swing.JPopupMenu;
+
 import java.awt.event.MouseEvent;
+
 import javax.swing.ListSelectionModel;
+
 import java.awt.event.MouseMotionAdapter;
+
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.JCheckBoxMenuItem;
@@ -351,9 +359,14 @@ public final class MainFrame extends JFrame {
 				/* カラムソートの設定 */
 				RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
 				table.setRowSorter(sorter);
+			} else {
+				JOptionPane.showMessageDialog(this, "Invalid timebase settings:" +  TimebaseManager.fileName, 
+						"Error", JOptionPane.ERROR_MESSAGE);
 			}
-			
+
 		} catch (IOException | ParseException e) {
+			JOptionPane.showMessageDialog(this, "Cannot load timebase settings: " +  TimebaseManager.fileName, 
+					"Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}
