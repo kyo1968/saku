@@ -1,6 +1,8 @@
 package saku;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -8,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.JLabel;
@@ -49,6 +52,9 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.ButtonGroup;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 /**
  * メインフレーム
  *
@@ -65,6 +71,16 @@ public final class MainFrame extends JFrame {
 	 * デートフォーマッタ
 	 */
 	private static LocalDateFormat df = new LocalDateFormat();
+	
+	/**
+	 * プロパティ
+	 */
+	private MainProperties properties = new MainProperties();
+	
+	/**
+	 * タイマ間隔 (ミリ秒)
+	 */
+	private final int delay = 1000;
 
 	/**
 	 * コンポーネント類
@@ -87,6 +103,13 @@ public final class MainFrame extends JFrame {
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JRadioButtonMenuItem radioButtonMenuItem_1;
 	private JRadioButtonMenuItem radioButtonMenuItem_2;
+	private JMenu mnAlert;
+	private JCheckBoxMenuItem chckbxmntmBeep;
+	private JRadioButtonMenuItem rdbtnmntmNone;
+	private JRadioButtonMenuItem rdbtnmntmMin;
+	private JRadioButtonMenuItem rdbtnmntmMin_1;
+	private JRadioButtonMenuItem rdbtnmntmMin_2;
+	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 	
 	/**
 	 * メインメソッド
@@ -155,10 +178,16 @@ public final class MainFrame extends JFrame {
 	 * コンストラクタ (Eclipse WDTで生成)
 	 */
 	public MainFrame() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				properties.save();
+			}
+		});
 		setTitle("Saku");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		setAlwaysOnTop(true);
+		setAlwaysOnTop(properties.isAlwaysOnTop());
 		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -189,6 +218,7 @@ public final class MainFrame extends JFrame {
 		mntmExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				properties.save();
 				dispose();
 			}
 		});
@@ -201,10 +231,11 @@ public final class MainFrame extends JFrame {
 		chckbxmntmAlwaysOnTop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JCheckBoxMenuItem c = (JCheckBoxMenuItem)e.getSource();
+				properties.setAlwaysOnTop(c.isSelected());
 				MainFrame.this.setAlwaysOnTop(c.isSelected());
 			}
 		});
-		chckbxmntmAlwaysOnTop.setSelected(true);
+		chckbxmntmAlwaysOnTop.setSelected(properties.isAlwaysOnTop());
 		mnSettings.add(chckbxmntmAlwaysOnTop);
 		
 		chckbxmntmAutoRefresh = new JCheckBoxMenuItem("Auto Refresh");
@@ -212,6 +243,7 @@ public final class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JCheckBoxMenuItem c = (JCheckBoxMenuItem)e.getSource();
 				
+				properties.setAutoRefresh(c.isSelected());
 				if (c.isSelected()) {
 					MainFrame.this.startTimer();
 				} else {
@@ -219,24 +251,75 @@ public final class MainFrame extends JFrame {
 				}
 			}
 		});
-		chckbxmntmAutoRefresh.setSelected(true);
+		chckbxmntmAutoRefresh.setSelected(properties.isAutoRefresh());
 		mnSettings.add(chckbxmntmAutoRefresh);
+		
+		chckbxmntmBeep = new JCheckBoxMenuItem("Alert Sound");
+		chckbxmntmBeep.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JCheckBoxMenuItem c = (JCheckBoxMenuItem)e.getSource();
+				properties.setAlertSound(c.isSelected());
+			}
+		});
+		chckbxmntmBeep.setSelected(properties.isAlertSound());
+		mnSettings.add(chckbxmntmBeep);
+		
+		mnAlert = new JMenu("Prior Notice");
+		mnSettings.add(mnAlert);
+		
+		rdbtnmntmNone = new JRadioButtonMenuItem("None");
+		rdbtnmntmNone.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				properties.setPriorNotice(MainProperties.PRIOR_NONE);
+			}
+		});
+		buttonGroup_1.add(rdbtnmntmNone);
+		mnAlert.add(rdbtnmntmNone);
+		
+		rdbtnmntmMin = new JRadioButtonMenuItem("1 min");
+		rdbtnmntmMin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				properties.setPriorNotice(MainProperties.PRIOR_MIN1);
+			}
+		});
+		buttonGroup_1.add(rdbtnmntmMin);
+		mnAlert.add(rdbtnmntmMin);
+		
+		rdbtnmntmMin_1 = new JRadioButtonMenuItem("3 min");
+		rdbtnmntmMin_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				properties.setPriorNotice(MainProperties.PRIOR_MIN3);
+			}
+		});
+		buttonGroup_1.add(rdbtnmntmMin_1);
+		mnAlert.add(rdbtnmntmMin_1);
+		
+		rdbtnmntmMin_2 = new JRadioButtonMenuItem("5 min");
+		rdbtnmntmMin_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				properties.setPriorNotice(MainProperties.PRIOR_MIN5);
+			}
+		});
+		buttonGroup_1.add(rdbtnmntmMin_2);
+		mnAlert.add(rdbtnmntmMin_2);
 		
 		mnOpacity = new JMenu("Opacity");
 		mnSettings.add(mnOpacity);
 		
-		radioButtonMenuItem = new JRadioButtonMenuItem("None");
+		radioButtonMenuItem = new JRadioButtonMenuItem("100%");
 		radioButtonMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				properties.setOpacity(MainProperties.OPACITY_100);
 				setOpacity(1.0f);
 			}
 		});
 		buttonGroup.add(radioButtonMenuItem);
 		mnOpacity.add(radioButtonMenuItem);
-		
+
 		radioButtonMenuItem_1 = new JRadioButtonMenuItem("80%");
 		radioButtonMenuItem_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				properties.setOpacity(MainProperties.OPACITY_80);
 				setOpacity(.8f);
 			}
 		});
@@ -246,6 +329,7 @@ public final class MainFrame extends JFrame {
 		radioButtonMenuItem_2 = new JRadioButtonMenuItem("50%");
 		radioButtonMenuItem_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				properties.setOpacity(MainProperties.OPACITY_50);
 				setOpacity(.5f);
 			}
 		});
@@ -273,7 +357,21 @@ public final class MainFrame extends JFrame {
 		scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		
-		table = new JTable();
+		table = new JTable() {
+			private static final long serialVersionUID = -2592351809384294718L;
+			@Override
+			public Component prepareRenderer(TableCellRenderer tcr, int row, int column) {
+				Component c = super.prepareRenderer(tcr, row, column);
+				String v = (String) getValueAt(row, 1);
+				if (v.endsWith("[Ready]")) {
+					c.setForeground(Color.RED);
+				} else {
+					c.setForeground(getForeground());
+				}
+				return (c);
+			}
+		};
+		
 		table.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
@@ -288,19 +386,51 @@ public final class MainFrame extends JFrame {
 		scrollPane.setViewportView(table);
 		
 		/* 時刻更新タイマ */
-		timer = new Timer(10000, new ActionListener() {
+		timer = new Timer(delay, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				refresh();
-				System.out.println("refreshing");
 			}
 		});
 		
+		/* 不透明度の初期設定 */
+		switch (properties.getOpacity()) {
+		case MainProperties.OPACITY_100:
+			radioButtonMenuItem.setSelected(true);
+			setOpacity(1.0f);
+			break;
+		case MainProperties.OPACITY_80:
+			radioButtonMenuItem_1.setSelected(true);
+			setOpacity(.8f);
+			break;
+		case MainProperties.OPACITY_50:
+			radioButtonMenuItem_2.setSelected(true);
+			setOpacity(.5f);
+			break;
+		}
+
+		/* 事前通知の初期設定 */
+		switch (properties.getPriorNotice()) {
+		case MainProperties.PRIOR_NONE:
+			rdbtnmntmNone.setSelected(true);
+			break;
+		case MainProperties.PRIOR_MIN1:
+			rdbtnmntmMin.setSelected(true);
+			break;
+		case MainProperties.PRIOR_MIN3:
+			rdbtnmntmMin_1.setSelected(true);
+			break;
+		case MainProperties.PRIOR_MIN5:
+			rdbtnmntmMin_2.setSelected(true);
+			break;
+		}
+
 		/* テーブル初期化 */
 		setUp();
 		
 		/* 時刻更新タイマの開始 */
 		startTimer();
+		
 	}
 	
 	/**
@@ -340,13 +470,13 @@ public final class MainFrame extends JFrame {
 				for (Entry<String, Timebase> e : m.entrySet()) {
 					Object[] dd = new Object[2];
 					dd[0] = e.getKey();
-					dd[1] = df.format(e.getValue().getTimeLine().get(0));
+					dd[1] = df.formatToUI(e.getValue().getTimeLine().get(0));
 					data[i] = dd;
 					i++;
 				}
 				
 				/* モデルを設定*/
-				DefaultTableModel model = new DefaultTableModel(data, new String[] {"Location", "Next Spawn"}) {
+				DefaultTableModel model = new DefaultTableModel(data, new String[] {"Location", "Estimated Spawn Time"}) {
 					private static final long serialVersionUID = -8462179571190270614L;
 
 					@Override
@@ -382,16 +512,27 @@ public final class MainFrame extends JFrame {
 		
 		/* 現時刻でタイムラインを再計算 */
 		Date c = new Date();
+		long alertTime = properties.getPriorNotice() * 1000;
 		TimebaseManager mgr = TimebaseManager.getInstance();
 		for (Vector<Object> e : (Vector<Vector<Object>>)model.getDataVector()) {
 			String key = (String)e.get(0);
 			Timebase tb = mgr.getTimebase(key);
 			tb.refresh(c);
-			e.set(1, df.format(tb.getTimeLine().get(0)));
+			
+			/* アラート表示 */
+			Date co = tb.getTimeLine().get(0);
+			if (alertTime == 0 || co.getTime() - c.getTime() > alertTime) {
+				e.set(1, df.formatToUI(co));
+			} else {
+				e.set(1, df.formatToUI(co) + " [Ready]");
+			}
 		}
 		
 		/* テーブル更新 */
 		model.fireTableDataChanged();
+		
+		/* 最終更新時間を表示 */
+		setTitle("Saku: [" + df.formatToUI(c) + "]");
 	}
 	
 	/**
@@ -419,7 +560,7 @@ public final class MainFrame extends JFrame {
 				
 				int i = 1;
 				for (Date date : line) {
-					JMenuItem item = new JMenuItem(i + ": " + df.format(date));
+					JMenuItem item = new JMenuItem(i + ": " + df.formatToUI(date));
 					popupMenu.add(item);
 					i++;
 				}

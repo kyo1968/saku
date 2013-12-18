@@ -74,7 +74,7 @@ public final class TimebaseDialog extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Timebase");
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 510, 300);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -170,7 +170,7 @@ public final class TimebaseDialog extends JDialog {
 					Object[] row = new Object[3];
 					
 					row[0] = e.getKey();									// ロケーション
-					row[1] = df.format(e.getValue().getBaseTime());			// 基準時間
+					row[1] = df.formatToUI(e.getValue().getBaseTime());			// 基準時間
 					row[2] = Integer.toString(e.getValue().getRespawn());	// リポップ間隔
 										
 					model.addRow(row);
@@ -223,7 +223,7 @@ public final class TimebaseDialog extends JDialog {
 				}
 				
 				Timebase tb = new Timebase();
-				tb.setBaseTime(df.parse(date));
+				tb.setBaseTime(df.parseFromUI(date));
 				tb.setRespawn(Integer.parseInt(respawn));
 				mgr.putTimebase(loc, tb);
 				

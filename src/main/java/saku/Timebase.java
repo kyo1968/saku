@@ -21,6 +21,11 @@ public final class Timebase {
 	private int respawn;
 	
 	/**
+	 * タイムラインの長さ
+	 */
+	private static final int LINECOUNT = 20;
+	
+	/**
 	 * 現在時刻からのタイムライン
 	 */
 	List<Date> timeLine;
@@ -34,18 +39,26 @@ public final class Timebase {
 		long s = base.getTime();		/* 基準時刻 */
 		long c = current.getTime();		/* 現在時刻 */
 		long r = respawn * 1000;		/* リポップ間隔 */
-		long a = ((c - s) / r) * r + s;	/* 最後のリポップ時刻 */
-
 		long t;	/* 直近のリポップ時刻 */
-		if (a < c) {
-			t = a + r;
+
+		/* 基準時刻と現在時刻を比較 */
+		if (s < c) {
+			/* 最後のリポップ時刻 */
+			long a = ((c - s) / r) * r + s;
+			
+			if (a < c) {
+				t = a + r;
+			} else {
+				t = a;
+			}
 		} else {
-			t = a;
+			/* 基準時 >= 現在時刻のときは基準時が起点 */
+			t = s;
 		}
 		
 		/* タイムラインの設定 */
 		List<Date> tl = new ArrayList<Date>();
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < LINECOUNT; i++) {
 			tl.add(new Date(t));
 			t += r;
 		}

@@ -4,7 +4,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -38,7 +37,7 @@ public class TimebaseManager {
 	/**
 	 * 日時フォーマッタ
 	 */
-	private DateFormat df = new LocalDateFormat();
+	private LocalDateFormat df = new LocalDateFormat();
 
 	/**
 	 * コンストラクタ
@@ -133,7 +132,7 @@ public class TimebaseManager {
 				/* ロケーションのタイムベースを設定 */
 				Timebase tb = new Timebase();
 				tb.setRespawn(Integer.parseInt(respawn));
-				tb.setBaseTime(df.parse(timebase));
+				tb.setBaseTime(df.parseFromFile(timebase));
 				tb.refresh(c);
 				
 				putTimebase(name, tb);
@@ -172,7 +171,7 @@ public class TimebaseManager {
 				StringBuffer s = new StringBuffer();
 				s.append("\"" + e.getKey() + "\",");				/* ロケーション */
 				s.append("\"" + e.getValue().getRespawn() + "\",");	/* リポップ間隔 */
-				s.append("\"" + df.format(e.getValue().getBaseTime()) + "\"");	/* 基準時間 */
+				s.append("\"" + df.formatToFile(e.getValue().getBaseTime()) + "\"");	/* 基準時間 */
 				w.println(s);
 			}
 		} finally {
