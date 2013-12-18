@@ -5,12 +5,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.JLabel;
@@ -23,7 +23,6 @@ import javax.swing.JMenuItem;
 import javax.swing.RowSorter;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -37,21 +36,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
-
 import javax.swing.JPopupMenu;
-
 import java.awt.event.MouseEvent;
-
 import javax.swing.ListSelectionModel;
-
 import java.awt.event.MouseMotionAdapter;
-
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.ButtonGroup;
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -483,12 +476,20 @@ public final class MainFrame extends JFrame {
 					public boolean isCellEditable(int row, int column) {
 						return (false);
 					}
+					
+					@Override
+					public Class<?> getColumnClass(int col) {
+						return (getValueAt(0, col).getClass());
+					}
 				};
 				table.setModel(model);
 				
 				/* カラムソートの設定 */
 				RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
 				table.setRowSorter(sorter);
+				
+				fixColumnWidth();
+				
 			} else {
 				JOptionPane.showMessageDialog(this, "Invalid timebase settings:" +  TimebaseManager.fileName, 
 						"Error", JOptionPane.ERROR_MESSAGE);
@@ -580,5 +581,33 @@ public final class MainFrame extends JFrame {
 		
 		/* 時刻更新タイマを再会 */
 		startTimer();
+	}
+	
+	/**
+	 * 列幅を調整する。
+	 */
+	private void fixColumnWidth () {
+		/* 列ごとに幅を計算 */
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			TableColumn tc = table.getColumnModel().getColumn(i);
+			
+			/* 各行の幅を計算 */
+			int max = 0;
+			int vrows = table.getRowCount();
+			for (int j = 0; j < vrows; j++) {
+				TableCellRenderer r = table.getCellRenderer(j, i);
+				Object value = table.getValueAt(j,  i);
+				Component c = r.getTableCellRendererComponent(table, value, false,  false, j, i);
+				int w = c.getPreferredSize().width;
+				
+				/* 最大幅を記録 */
+				if (max < w) {
+					max = w;
+				}
+			}
+			
+			/* 最大幅を列幅に設定 */
+			tc.setPreferredWidth(max + 1);
+		}
 	}
 }

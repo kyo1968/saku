@@ -23,7 +23,7 @@ public final class Timebase {
 	/**
 	 * タイムラインの長さ
 	 */
-	private static final int LINECOUNT = 20;
+	private static final int LINECOUNT = 30;
 	
 	/**
 	 * 現在時刻からのタイムライン

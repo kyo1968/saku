@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>saku</groupId>
 	<artifactId>saku</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>0.9</version>
 	<packaging>jar</packaging>
 	<name>saku</name>
 
@@ -13,7 +13,6 @@
 	</properties>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -51,6 +50,46 @@
 					</archive>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+
+			<!-- 
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.5.2</version>
+				<executions>
+					<execution>
+						<id>saku</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<jar>${project.build.directory}/${artifactId}-${version}.jar</jar>
+							<outfile>${project.build.directory}/${artifactId}.exe</outfile>
+							<downloadUrl>http://java.com/download</downloadUrl>
+							<icon />
+							<jre>
+								<path />
+								<minVersion>1.7.0</minVersion>
+								<jdkPreference>preferJre</jdkPreference>
+							</jre>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+			
 		</plugins>
 	</build>
 </project>
