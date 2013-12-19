@@ -4,6 +4,6 @@
 .checkstyle
 .lock
 *.org
-timebase.dat
-saku.ini
+/timebase.dat
+/saku.ini
 target
