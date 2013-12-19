@@ -107,6 +107,26 @@ public final class MainProperties {
 	public static final String LOC_Y = "locY";
 	
 	/**
+	 * ウィンドウ幅
+	 */
+	private int frameWidth = -1;
+	
+	/**
+	 * ウィンドウ幅のプロパティ名
+	 */
+	public static final String FRAME_WIDTH = "frameWidth";
+	
+	/**
+	 * ウィンドウ高さ
+	 */
+	private int frameHeight = -1;
+	
+	/**
+	 * ウィンドウ高さのプロパティ名
+	 */
+	private static final String FRAME_HEIGHT = "frameHeight";
+	
+	/**
 	 * 不透明度: 100%
 	 */
 	public static final int OPACITY_100 = 0;
@@ -303,6 +323,42 @@ public final class MainProperties {
 	}
 	
 	/**
+	 * ウィンドウ幅を取得する。
+	 * 
+	 * @return ウィンドウ幅
+	 */
+	public int getWidth() {
+		return frameWidth;
+	}
+	
+	/**
+	 * ウィンドウ幅を設定する。
+	 * 
+	 * @param frameWidth ウィンドウ幅
+	 */
+	public void setWidth(int frameWidth) {
+		this.frameWidth = frameWidth;
+	}
+
+	/**
+	 * ウィンドウ高さを取得する。
+	 * 
+	 * @return ウィンドウ高さ
+	 */
+	public int getHeight() {
+		return frameHeight;
+	}
+	
+	/**
+	 * ウィンドウ高さを設定する。
+	 * 
+	 * @param frameHeight ウィンドウ高さ
+	 */
+	public void setHeight(int frameHeight) {
+		this.frameHeight = frameHeight;
+	}
+
+	/**
 	 * プロパティファイルを読み込む。
 	 * 
 	 * @param file プロパティファイル名
@@ -330,6 +386,8 @@ public final class MainProperties {
 			setOpacity(getInt(OPACITY, OPACITY_100));
 			setX(getInt(LOC_X, 0));
 			setY(getInt(LOC_Y, 0));
+			setWidth(getInt(FRAME_WIDTH, -1));
+			setHeight(getInt(FRAME_HEIGHT, -1));
 			setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
 			setAlertSound(getBoolean(ALERT_SOUND, false));
 			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
@@ -371,6 +429,8 @@ public final class MainProperties {
 			properties.put(OPACITY, Integer.toString(getOpacity()));
 			properties.put(LOC_X, Integer.toString(getX()));
 			properties.put(LOC_Y, Integer.toString(getY()));
+			properties.put(FRAME_WIDTH, Integer.toString(getWidth()));
+			properties.put(FRAME_HEIGHT, Integer.toString(getHeight()));
 			properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
 			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
 			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));

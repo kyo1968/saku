@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -180,7 +181,7 @@ public final class MainFrame extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				properties.save();
+				tearDown();
 			}
 		});
 		setTitle("Saku");
@@ -217,7 +218,7 @@ public final class MainFrame extends JFrame {
 		mntmExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				properties.save();
+				tearDown();
 				dispose();
 			}
 		});
@@ -465,11 +466,13 @@ public final class MainFrame extends JFrame {
 		}
 
 		/* テーブル初期化 */
-		setUp();
+		initTable();
 		
 		/* 時刻更新タイマの開始 */
 		startTimer();
 		
+		/* ウィンドウ初期化 */
+		setUp();
 	}
 	
 	/**
@@ -496,7 +499,7 @@ public final class MainFrame extends JFrame {
 	/**
 	 * テーブルを初期化する。
 	 */
-	private void setUp (){
+	private void initTable (){
 		try {
 			TimebaseManager mgr = TimebaseManager.getInstance();
 
@@ -546,6 +549,47 @@ public final class MainFrame extends JFrame {
 					"Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * 初期化処理する。
+	 */
+	private void setUp() {
+		/* ウィンドウの位置とサイズを再現 */
+		int x = properties.getX();
+		int y = properties.getY();
+		int width = properties.getWidth();
+		int height = properties.getHeight();
+		
+		/* 現在のウィンドウ位置を取得 */
+		Rectangle r = getBounds();
+		
+		/* 保存している値があれば適用 */
+		if (width > 0 && height > 0) {
+			r.setSize(width, height);
+		}
+		
+		if (x >= 0 && y >= 0) {
+			r.setLocation(x, y);
+		}
+		
+		/* 位置とサイズ変更 */
+		setBounds(r);
+	}
+	
+	/**
+	 * 終了処理する。
+	 */
+	private void tearDown() {
+		/* ウィンドウの位置とサイズを記録 */
+		Rectangle r = getBounds();
+		properties.setX((int)r.getX());
+		properties.setY((int)r.getY());
+		properties.setWidth((int)r.getWidth());
+		properties.setHeight((int)r.getHeight());
+		
+		/* プロパティを保存 */
+		properties.save();
 	}
 	
 	/**
@@ -636,7 +680,7 @@ public final class MainFrame extends JFrame {
 		stopTimer();
 		
 		/* テーブルの初期化 */
-		setUp();
+		initTable();
 		
 		/* 時刻更新タイマを再会 */
 		startTimer();
