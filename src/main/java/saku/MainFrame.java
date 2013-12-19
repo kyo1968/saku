@@ -22,11 +22,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.RowSorter;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -67,6 +67,11 @@ public final class MainFrame extends JFrame {
 	 * デートフォーマッタ
 	 */
 	private static DateFormat df = LocalDateFormat.getInstance(LocalDateFormat.FORMAT_UI_TIME);
+
+	/**
+	 * デートフォーマッタ (タイトルバー用)
+	 */
+	private static DateFormat ldf = LocalDateFormat.getInstance(LocalDateFormat.FORMAT_UI_DATETIME);
 	
 	/**
 	 * プロパティ
@@ -397,6 +402,7 @@ public final class MainFrame extends JFrame {
 			}
 		};
 		
+		/* マウスオーバーで選択 */
 		table.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
@@ -404,11 +410,21 @@ public final class MainFrame extends JFrame {
 				table.setRowSelectionInterval(row, row);
 			}
 		});
+		
+		/* クリックでタイムライン表示 */
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				popupMenu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+		
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
 		table.getTableHeader().setReorderingAllowed(false);
-		table.setComponentPopupMenu(popupMenu);
+		//table.setComponentPopupMenu(popupMenu);
 		table.setFont(new Font("MS PGothic", Font.BOLD, 12));
+		table.setDefaultRenderer(JLabel.class, new LabelRenderer());
 		scrollPane.setViewportView(table);
 		
 		/* 時刻更新タイマ */
@@ -510,15 +526,16 @@ public final class MainFrame extends JFrame {
 				
 				int i = 0;
 				for (Entry<String, Timebase> e : m.entrySet()) {
-					Object[] dd = new Object[2];
+					Object[] dd = new Object[3];
 					dd[0] = e.getKey();
 					dd[1] = df.format(e.getValue().getTimeLine().get(0));
+					dd[2] = new JLabel();
 					data[i] = dd;
 					i++;
 				}
 				
 				/* モデルを設定*/
-				DefaultTableModel model = new DefaultTableModel(data, new String[] {"Location", "Estimated Spawn Time"}) {
+				DefaultTableModel model = new DefaultTableModel(data, new String[] {"Location", "Estimated Spawn Time", ""}) {
 					private static final long serialVersionUID = -8462179571190270614L;
 
 					@Override
@@ -534,9 +551,17 @@ public final class MainFrame extends JFrame {
 				table.setModel(model);
 				
 				/* カラムソートの設定 */
-				RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+				TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+				sorter.setSortable(2, false);
 				table.setRowSorter(sorter);
 				
+				/* アイコンカラムの固定 */
+				TableColumn col = table.getColumnModel().getColumn(2);
+				col.setMaxWidth(16);
+				col.setMinWidth(16);
+				col.setResizable(false);
+
+				/* カラム幅の調整 */
 				fixColumnWidth();
 				
 			} else {
@@ -634,7 +659,7 @@ public final class MainFrame extends JFrame {
 		model.fireTableDataChanged();
 		
 		/* 最終更新時間を表示 */
-		setTitle("Saku: [" + df.format(c) + "]");
+		setTitle("Saku: [" + ldf.format(c) + "]");
 	}
 	
 	/**
