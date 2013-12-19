@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -30,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +65,7 @@ public final class MainFrame extends JFrame {
 	/**
 	 * デートフォーマッタ
 	 */
-	private static LocalDateFormat df = new LocalDateFormat();
+	private static DateFormat df = LocalDateFormat.getInstance(LocalDateFormat.FORMAT_UI_TIME);
 	
 	/**
 	 * プロパティ
@@ -103,6 +105,10 @@ public final class MainFrame extends JFrame {
 	private JRadioButtonMenuItem rdbtnmntmMin_1;
 	private JRadioButtonMenuItem rdbtnmntmMin_2;
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
+	private JMenu mnSurface;
+	private JRadioButtonMenuItem rdbtnmntmNormal;
+	private JRadioButtonMenuItem rdbtnmntmReverse;
+	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
 	
 	/**
 	 * メインメソッド
@@ -192,7 +198,7 @@ public final class MainFrame extends JFrame {
 		mntmTimebase.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new TimebaseDialog().setVisible(true);
+				new TimebaseDialog(MainFrame.this).setVisible(true);
 				reload();
 			}
 		});
@@ -329,6 +335,31 @@ public final class MainFrame extends JFrame {
 		buttonGroup.add(radioButtonMenuItem_2);
 		mnOpacity.add(radioButtonMenuItem_2);
 		
+		mnSurface = new JMenu("Surface");
+		mnSettings.add(mnSurface);
+		
+		rdbtnmntmNormal = new JRadioButtonMenuItem("Normal");
+		rdbtnmntmNormal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				properties.setSurfaceStyle(MainProperties.STYLE_NORMAL);
+				table.setForeground(Color.BLACK);
+				table.setBackground(Color.WHITE);
+			}
+		});
+		buttonGroup_2.add(rdbtnmntmNormal);
+		mnSurface.add(rdbtnmntmNormal);
+		
+		rdbtnmntmReverse = new JRadioButtonMenuItem("Reverse");
+		rdbtnmntmReverse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				properties.setSurfaceStyle(MainProperties.STYLE_REVERSE);
+				table.setForeground(Color.WHITE);
+				table.setBackground(Color.BLACK);
+			}
+		});
+		buttonGroup_2.add(rdbtnmntmReverse);
+		mnSurface.add(rdbtnmntmReverse);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -356,7 +387,7 @@ public final class MainFrame extends JFrame {
 			public Component prepareRenderer(TableCellRenderer tcr, int row, int column) {
 				Component c = super.prepareRenderer(tcr, row, column);
 				String v = (String) getValueAt(row, 1);
-				if (v.endsWith("[Ready]")) {
+				if (v.endsWith("[Ready!]")) {
 					c.setForeground(Color.RED);
 				} else {
 					c.setForeground(getForeground());
@@ -376,6 +407,7 @@ public final class MainFrame extends JFrame {
 		table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
 		table.getTableHeader().setReorderingAllowed(false);
 		table.setComponentPopupMenu(popupMenu);
+		table.setFont(new Font("MS PGothic", Font.BOLD, 12));
 		scrollPane.setViewportView(table);
 		
 		/* 時刻更新タイマ */
@@ -415,6 +447,20 @@ public final class MainFrame extends JFrame {
 			break;
 		case MainProperties.PRIOR_MIN5:
 			rdbtnmntmMin_2.setSelected(true);
+			break;
+		}
+		
+		/* スタイルの初期設定 */
+		switch (properties.getSurfaceStyle()) {
+		case MainProperties.STYLE_NORMAL:
+			rdbtnmntmNormal.setSelected(true);
+			table.setForeground(Color.BLACK);
+			table.setBackground(Color.WHITE);
+			break;
+		case MainProperties.STYLE_REVERSE:
+			rdbtnmntmReverse.setSelected(true);
+			table.setForeground(Color.WHITE);
+			table.setBackground(Color.BLACK);
 			break;
 		}
 
@@ -463,7 +509,7 @@ public final class MainFrame extends JFrame {
 				for (Entry<String, Timebase> e : m.entrySet()) {
 					Object[] dd = new Object[2];
 					dd[0] = e.getKey();
-					dd[1] = df.formatToUI(e.getValue().getTimeLine().get(0));
+					dd[1] = df.format(e.getValue().getTimeLine().get(0));
 					data[i] = dd;
 					i++;
 				}
@@ -523,9 +569,20 @@ public final class MainFrame extends JFrame {
 			/* アラート表示 */
 			Date co = tb.getTimeLine().get(0);
 			if (alertTime == 0 || co.getTime() - c.getTime() > alertTime) {
-				e.set(1, df.formatToUI(co));
+				e.set(1, df.format(co));
+				/* アラート音の準備 */
+				tb.setAlert(true);
 			} else {
-				e.set(1, df.formatToUI(co) + " [Ready]");
+				e.set(1, df.format(co) + " [Ready!]");
+				
+				/* アラート音 */
+				if (tb.isAlert()) {
+					if (properties.isAlertSound()) {
+						Toolkit.getDefaultToolkit().beep();
+					}
+					/* 繰り返し通知の防止 */
+					tb.setAlert(false);
+				}
 			}
 		}
 		
@@ -533,7 +590,7 @@ public final class MainFrame extends JFrame {
 		model.fireTableDataChanged();
 		
 		/* 最終更新時間を表示 */
-		setTitle("Saku: [" + df.formatToUI(c) + "]");
+		setTitle("Saku: [" + df.format(c) + "]");
 	}
 	
 	/**
@@ -543,27 +600,29 @@ public final class MainFrame extends JFrame {
 		
 		/* 選択した行を取得 */
 		int row = table.getSelectedRow();
-		String key = (String)table.getValueAt(row, 0);
-		
-		/* ポップアップメニューに項目を設定 */
-		if (key != null && !key.isEmpty()) {
-			/* 選択したロケーションをラベルに設定 */
-			JLabel label = new JLabel("<html><b>" + key + "</b></html>");
-			label.setHorizontalAlignment(SwingConstants.CENTER);
-			popupMenu.add(label);
-			popupMenu.addSeparator();
+		if (row >= 0) {
+			String key = (String)table.getValueAt(row, 0);
 			
-			/* タイムラインを設定 */
-			TimebaseManager mgr = TimebaseManager.getInstance();
-			Timebase tb = mgr.getTimebase(key);
-			if (tb != null) {
-				List<Date> line = tb.getTimeLine();
+			/* ポップアップメニューに項目を設定 */
+			if (key != null && !key.isEmpty()) {
+				/* 選択したロケーションをラベルに設定 */
+				JLabel label = new JLabel("<html><b>" + key + "</b></html>");
+				label.setHorizontalAlignment(SwingConstants.CENTER);
+				popupMenu.add(label);
+				popupMenu.addSeparator();
 				
-				int i = 1;
-				for (Date date : line) {
-					JMenuItem item = new JMenuItem(i + ": " + df.formatToUI(date));
-					popupMenu.add(item);
-					i++;
+				/* タイムラインを設定 */
+				TimebaseManager mgr = TimebaseManager.getInstance();
+				Timebase tb = mgr.getTimebase(key);
+				if (tb != null) {
+					List<Date> line = tb.getTimeLine();
+					
+					int i = 1;
+					for (Date date : line) {
+						JMenuItem item = new JMenuItem(i + ") " + df.format(date));
+						popupMenu.add(item);
+						i++;
+					}
 				}
 			}
 		}

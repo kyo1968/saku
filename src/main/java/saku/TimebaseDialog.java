@@ -7,6 +7,7 @@ import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -21,6 +22,7 @@ import javax.swing.JMenu;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,7 +46,7 @@ public final class TimebaseDialog extends JDialog {
 	/**
 	 * デートフォーマッタ
 	 */
-	private static final LocalDateFormat df = new LocalDateFormat();
+	private static final DateFormat df = LocalDateFormat.getInstance(LocalDateFormat.FORMAT_UI_DATETIME);
 	
 	/**
 	 * コンポーネント類
@@ -59,7 +61,7 @@ public final class TimebaseDialog extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			TimebaseDialog dialog = new TimebaseDialog();
+			TimebaseDialog dialog = new TimebaseDialog(null);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -70,7 +72,8 @@ public final class TimebaseDialog extends JDialog {
 	/**
 	 * コンストラクタ (Eclipse WDTで生成)
 	 */
-	public TimebaseDialog() {
+	public TimebaseDialog(JFrame parent) {
+		super(parent, true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Timebase");
 		setModalityType(ModalityType.APPLICATION_MODAL);
@@ -170,7 +173,7 @@ public final class TimebaseDialog extends JDialog {
 					Object[] row = new Object[3];
 					
 					row[0] = e.getKey();									// ロケーション
-					row[1] = df.formatToUI(e.getValue().getBaseTime());			// 基準時間
+					row[1] = df.format(e.getValue().getBaseTime());		// 基準時間
 					row[2] = Integer.toString(e.getValue().getRespawn());	// リポップ間隔
 										
 					model.addRow(row);
@@ -223,7 +226,7 @@ public final class TimebaseDialog extends JDialog {
 				}
 				
 				Timebase tb = new Timebase();
-				tb.setBaseTime(df.parseFromUI(date));
+				tb.setBaseTime(df.parse(date));
 				tb.setRespawn(Integer.parseInt(respawn));
 				mgr.putTimebase(loc, tb);
 				

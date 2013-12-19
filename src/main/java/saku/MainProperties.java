@@ -77,6 +77,16 @@ public final class MainProperties {
 	public static final String ALERT_SOUND = "alertSound";
 	
 	/**
+	 * サーフェイスタイプ
+	 */
+	private int surfaceStyle = STYLE_NORMAL;
+	
+	/**
+	 * サーフェイスタイプのプロパティ名
+	 */
+	public static final String SURFACE_STYLE = "surfaceStyle";
+	
+	/**
 	 * ウィンドウ X位置
 	 */
 	private int locX = 0;
@@ -111,10 +121,35 @@ public final class MainProperties {
 	 */
 	public static final int OPACITY_50 = 2;
 	
+	/**
+	 * 事前通知: なし
+	 */
 	public static final int PRIOR_NONE = 0;
+	
+	/**
+	 * 事前通知: 60秒前
+	 */
 	public static final int PRIOR_MIN1 = 60;
+
+	/**
+	 * 事前通知: 180秒前
+	 */
 	public static final int PRIOR_MIN3 = 180;
+	
+	/**
+	 * 事前通知: 300秒前
+	 */
 	public static final int PRIOR_MIN5 = 300;
+	
+	/**
+	 * サーフェイススタイル: 通常
+	 */
+	public static final int STYLE_NORMAL = 0;
+	
+	/**
+	 * サーフェイススタイル: 反転
+	 */
+	public static final int STYLE_REVERSE = 1;
 	
 	/**
 	 * コンストラクタ
@@ -250,6 +285,24 @@ public final class MainProperties {
 	}
 	
 	/**
+	 * サーフェイススタイルを取得する。
+	 * 
+	 * @return サーフェイススタイル
+	 */
+	public int getSurfaceStyle() {
+		return surfaceStyle;
+	}
+	
+	/**
+	 * サーフェイススタイルを設定する。
+	 * 
+	 * @param surfaceStyle サーフェイススタイル
+	 */
+	public void setSurfaceStyle(int surfaceStyle) {
+		this.surfaceStyle = surfaceStyle;
+	}
+	
+	/**
 	 * プロパティファイルを読み込む。
 	 * 
 	 * @param file プロパティファイル名
@@ -279,6 +332,7 @@ public final class MainProperties {
 			setY(getInt(LOC_Y, 0));
 			setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
 			setAlertSound(getBoolean(ALERT_SOUND, false));
+			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -319,6 +373,7 @@ public final class MainProperties {
 			properties.put(LOC_Y, Integer.toString(getY()));
 			properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
 			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
+			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
 			
 			properties.store(os, "saku settings");
 		} catch (IOException e) {

@@ -21,6 +21,11 @@ public final class Timebase {
 	private int respawn;
 	
 	/**
+	 * アラート通知
+	 */
+	private boolean alert = false;
+	
+	/**
 	 * タイムラインの長さ
 	 */
 	private static final int LINECOUNT = 30;
@@ -109,5 +114,23 @@ public final class Timebase {
 	 */
 	public List<Date> getTimeLine() {
 		return timeLine;
+	}
+	
+	/**
+	 * アラート通知フラグを設定する。
+	 * 
+	 * @param alert アラート通知フラグ
+	 */
+	public void setAlert(boolean alert) {
+		this.alert = alert;
+	}
+	
+	/**
+	 * アラート通知フラグを取得する。
+	 * 
+	 * @return アラート通知フラグ
+	 */
+	public boolean isAlert() {
+		return alert;
 	}
 }
