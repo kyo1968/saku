@@ -27,6 +27,15 @@
 		</fileSet>
 	</fileSets>
 
+	<!--  Executable files (launch4j) -->
+	<files>
+		<file>
+			<source>target/${project.name}.exe</source>
+			<outputDirectory>/</outputDirectory>
+			<destName>${project.name}.exe</destName>
+		</file>
+	</files>
+
 	<dependencySets>
 		<dependencySet>
 			<unpack>false</unpack>
