@@ -1,25 +1,11 @@
 package saku;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-
 /**
  * プロパティクラス
  *
  * @version 1.0
  */
-public final class MainProperties {
-	
-	/**
-	 * プロパティ
-	 */
-	private Properties properties = new Properties();
+public final class MainProperties  extends BaseProperties {
 	
 	/**
 	 * プロパティファイル名
@@ -359,28 +345,10 @@ public final class MainProperties {
 	}
 
 	/**
-	 * プロパティファイルを読み込む。
-	 * 
-	 * @param file プロパティファイル名
+	 * {@inheritDoc}
 	 */
-	public void load(String file) {
-		try {
-			load(new FileInputStream(new File(file))); 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * プロパティファイルを読み込む。
-	 * 
-	 * @param is 入力ストリーム
-	 */
-	public void load(InputStream is) {
-		
-		try {
-			properties.load(is);
-			
+	@Override
+	protected void loadProperties() {
 			setAlwaysOnTop(getBoolean(ALWAYS_ON_TOP, true));
 			setAutoRefresh(getBoolean(AUTO_REFRESH, true));
 			setOpacity(getInt(OPACITY, OPACITY_100));
@@ -391,10 +359,6 @@ public final class MainProperties {
 			setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
 			setAlertSound(getBoolean(ALERT_SOUND, false));
 			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -405,25 +369,10 @@ public final class MainProperties {
 	}
 
 	/**
-	 * プロパティファイルを保存する。
-	 * 
-	 * @param file プロパティファイル名
+	 * {@inheritDoc}
 	 */
-	public void save(String file) {
-		try {
-			save(new FileOutputStream(new File(file)));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * プロパティファイルを保存する。
-	 * 
-	 * @param os 出力ストリーム
-	 */
-	public void save(OutputStream os) {
-		try {
+	@Override
+	protected void storeProperties() {
 			properties.put(ALWAYS_ON_TOP, Boolean.toString(isAlwaysOnTop()));
 			properties.put(AUTO_REFRESH, Boolean.toString(isAutoRefresh()));
 			properties.put(OPACITY, Integer.toString(getOpacity()));
@@ -434,92 +383,5 @@ public final class MainProperties {
 			properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
 			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
 			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
-			
-			properties.store(os, "saku settings");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * プロパティ値(文字列)を取得する。
-	 * 
-	 * @param key プロパティ名
-	 * @param defaultValue デフォルト値
-	 * @return プロパティ値
-	 */
-	public String getString(String key, String defaultValue) {
-		try {
-			String v = properties.getProperty(key);
-			if (v != null) {
-				return (v);
-			}
-			return (defaultValue);
-		} catch (Exception e) {
-			return (defaultValue);
-		}
-	}
-	
-	/**
-	 * プロパティ値(論理値)を取得する。
-	 * 
-	 * @param key プロパティ名
-	 * @param defaultValue デフォルト値
-	 * @return プロパティ値
-	 */
-	public boolean getBoolean(String key, boolean defaultValue) {
-		
-		try {
-			String v = properties.getProperty(key);
-
-			if (v != null) {
-				return (Boolean.parseBoolean(v));
-			}
-			return (defaultValue);
-		} catch (Exception e) {
-			return (defaultValue);
-		}
-	}
-	
-	/**
-	 * プロパティ値(浮動小数点)を取得する。
-	 * 
-	 * @param key プロパティ名
-	 * @param defaultValue デフォルト値
-	 * @return プロパティ値
-	 */
-	public float getFloat(String key, float defaultValue) {
-		
-		try {
-			String v = properties.getProperty(key);
-
-			if (v != null) {
-				return (Float.parseFloat(v));
-			}
-			return (defaultValue);
-		} catch (Exception e) {
-			return (defaultValue);
-		}
-	}
-	
-	/**
-	 * プロパティ値(整数値)を取得する。
-	 * 
-	 * @param key プロパティ名
-	 * @param defaultValue デフォルト値
-	 * @return プロパティ値
-	 */
-	public int getInt(String key, int defaultValue) {
-		
-		try {
-			String v = properties.getProperty(key);
-
-			if (v != null) {
-				return (Integer.parseInt(v));
-			}
-			return (defaultValue);
-		} catch (Exception e) {
-			return (defaultValue);
-		}
 	}
 }
