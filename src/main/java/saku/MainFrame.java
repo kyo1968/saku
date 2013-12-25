@@ -50,6 +50,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.ButtonGroup;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JButton;
 
 /**
  * メインフレーム
@@ -96,6 +97,9 @@ public final class MainFrame extends JFrame {
 	private JMenuItem mntmRefresh;
 	private JPopupMenu popupMenu;
 	private Timer timer;
+	private Timer st0;
+	private Timer st1;
+	private Timer st2;
 	private JMenu mnSettings;
 	private JCheckBoxMenuItem chckbxmntmAlwaysOnTop;
 	private JCheckBoxMenuItem chckbxmntmAutoRefresh;
@@ -115,6 +119,10 @@ public final class MainFrame extends JFrame {
 	private JRadioButtonMenuItem rdbtnmntmNormal;
 	private JRadioButtonMenuItem rdbtnmntmReverse;
 	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
+	private JPanel panel;
+	private JButton btnCountDown;
+	private JButton btnCountDown1;
+	private JButton btnCountDown2;
 	
 	/**
 	 * メインメソッド
@@ -368,7 +376,6 @@ public final class MainFrame extends JFrame {
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
 		popupMenu = new JPopupMenu();
@@ -382,10 +389,11 @@ public final class MainFrame extends JFrame {
 				populateMenuItem();
 			}
 		});
+		contentPane.setLayout(new BorderLayout(0, 0));
 		//contentPane.add(popupMenu, BorderLayout.NORTH);
 		
 		scrollPane = new JScrollPane();
-		contentPane.add(scrollPane, BorderLayout.CENTER);
+		contentPane.add(scrollPane);
 		
 		table = new JTable() {
 			private static final long serialVersionUID = -2592351809384294718L;
@@ -426,6 +434,54 @@ public final class MainFrame extends JFrame {
 		table.setFont(new Font("MS PGothic", Font.BOLD, 12));
 		table.setDefaultRenderer(JLabel.class, new LabelRenderer());
 		scrollPane.setViewportView(table);
+		
+		panel = new JPanel();
+		contentPane.add(panel, BorderLayout.SOUTH);
+		
+		btnCountDown = new JButton("00:00");
+		btnCountDown.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				/* カウントダウンタイマ 1 */
+				if (st0 == null || !st0.isRunning()) {
+					st0 = new Timer(1000, new CountDownListener(btnCountDown, properties.getCountDown()));
+					st0.start();
+				} else {
+					st0.stop();
+					st0 = null;
+				}
+			}
+		});
+		panel.add(btnCountDown);
+		
+		btnCountDown1 = new JButton("00:00");
+		btnCountDown1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				/* カウントダウンタイマ2 */
+				if (st1 == null || !st1.isRunning()) {
+					st1 = new Timer(1000, new CountDownListener(btnCountDown1, properties.getCountDown()));
+					st1.start();
+				} else {
+					st1.stop();
+					st1 = null;
+				}
+			}
+		});
+		panel.add(btnCountDown1);
+		
+		btnCountDown2 = new JButton("00:00");
+		btnCountDown2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				/* カウントダウンタイマ3 */
+				if (st2 == null || !st2.isRunning()) {
+					st2 = new Timer(1000, new CountDownListener(btnCountDown2, properties.getCountDown()));
+					st2.start();
+				} else {
+					st2.stop();
+					st2 = null;
+				}
+			}
+		});
+		panel.add(btnCountDown2);
 		
 		/* 時刻更新タイマ */
 		timer = new Timer(delay, new ActionListener() {

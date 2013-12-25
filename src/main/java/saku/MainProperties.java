@@ -73,6 +73,16 @@ public final class MainProperties  extends BaseProperties {
 	public static final String SURFACE_STYLE = "surfaceStyle";
 	
 	/**
+	 * カウントダウンタイマ(秒)
+	 */
+	private int countDown = 60;
+	
+	/**
+	 * カウントダウンタイマのプロパティ名
+	 */
+	public static final String COUNT_DOWN = "countDown";
+	
+	/**
 	 * ウィンドウ X位置
 	 */
 	private int locX = 0;
@@ -156,6 +166,11 @@ public final class MainProperties  extends BaseProperties {
 	 * サーフェイススタイル: 反転
 	 */
 	public static final int STYLE_REVERSE = 1;
+	
+	/**
+	 * カウントダウンのデフォルト値(秒)
+	 */
+	public static final int COUNTDOWN = 60;
 	
 	/**
 	 * コンストラクタ
@@ -252,6 +267,24 @@ public final class MainProperties  extends BaseProperties {
 	 */
 	public void setAlertSound(boolean alertSound) {
 		this.alertSound = alertSound;
+	}
+	
+	/**
+	 * カウントダウン(秒)を取得する．
+	 * 
+	 * @return カウントダウン値
+	 */
+	public int getCountDown() {
+		return countDown;
+	}
+	
+	/**
+	 * カウントダウン(秒)を設定する．
+	 * 
+	 * @param countDown カウントダウン
+	 */
+	public void setCountDown(int countDown) {
+		this.countDown = countDown;
 	}
 	
 	/**
@@ -359,6 +392,7 @@ public final class MainProperties  extends BaseProperties {
 			setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
 			setAlertSound(getBoolean(ALERT_SOUND, false));
 			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
+			setCountDown(getInt(COUNT_DOWN, COUNTDOWN));
 	}
 	
 	/**
@@ -383,5 +417,6 @@ public final class MainProperties  extends BaseProperties {
 			properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
 			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
 			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
+			properties.put(COUNT_DOWN, Integer.toString(getCountDown()));
 	}
 }
