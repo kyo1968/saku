@@ -1,5 +1,9 @@
 package saku;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * プロパティクラス
  *
@@ -75,7 +79,7 @@ public final class MainProperties  extends BaseProperties {
 	/**
 	 * カウントダウンタイマ(秒)
 	 */
-	private int countDown = 60;
+	private Map<String, Integer> countDown = new HashMap<String, Integer>();
 	
 	/**
 	 * カウントダウンタイマのプロパティ名
@@ -173,10 +177,26 @@ public final class MainProperties  extends BaseProperties {
 	public static final int COUNTDOWN = 60;
 	
 	/**
+	 * インスタンス
+	 */
+	private static MainProperties me = null;
+	
+	/**
 	 * コンストラクタ
 	 */
-	public MainProperties() {
+	private MainProperties() {
 		load(fileName);
+	}
+	
+	/**
+	 * インスタンスを取得する。
+	 * @return インスタンス
+	 */
+	public static final MainProperties getInstance() {
+		if (me == null) {
+			me = new MainProperties();
+		}
+		return (me);
 	}
 	
 	/**
@@ -274,8 +294,15 @@ public final class MainProperties  extends BaseProperties {
 	 * 
 	 * @return カウントダウン値
 	 */
-	public int getCountDown() {
-		return countDown;
+	public int getCountDown(String name) {
+		Integer c = countDown.get(name + "." + COUNT_DOWN);
+
+		/* 未登録のときはデフォルト値 */
+		if (c != null) {
+			return c;
+		}
+		
+		return COUNTDOWN;
 	}
 	
 	/**
@@ -283,8 +310,8 @@ public final class MainProperties  extends BaseProperties {
 	 * 
 	 * @param countDown カウントダウン
 	 */
-	public void setCountDown(int countDown) {
-		this.countDown = countDown;
+	public void setCountDown(String name, int countDown) {
+		this.countDown.put(name + "." + COUNT_DOWN, countDown);
 	}
 	
 	/**
@@ -376,7 +403,7 @@ public final class MainProperties  extends BaseProperties {
 	public void setHeight(int frameHeight) {
 		this.frameHeight = frameHeight;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -392,7 +419,14 @@ public final class MainProperties  extends BaseProperties {
 			setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
 			setAlertSound(getBoolean(ALERT_SOUND, false));
 			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
-			setCountDown(getInt(COUNT_DOWN, COUNTDOWN));
+			
+			/* カウントダウンプロパティの検索 */
+			for (Entry<Object, Object> e : properties.entrySet()) {
+				String key = (String)e.getKey();
+				if (key.endsWith("." + COUNT_DOWN)) {
+					countDown.put(key, getInt(key, COUNTDOWN));		
+				}
+			}
 	}
 	
 	/**
@@ -417,6 +451,12 @@ public final class MainProperties  extends BaseProperties {
 			properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
 			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
 			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
-			properties.put(COUNT_DOWN, Integer.toString(getCountDown()));
+			
+			/* カウントダウンプロパティの保存 */
+			for (Entry<String, Integer> e : countDown.entrySet()) {
+				String key = e.getKey();
+				Integer value = e.getValue();
+				properties.put(key, Integer.toString(value));
+			}
 	}
 }

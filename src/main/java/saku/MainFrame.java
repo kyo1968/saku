@@ -77,7 +77,7 @@ public final class MainFrame extends JFrame {
 	/**
 	 * プロパティ
 	 */
-	private MainProperties properties = new MainProperties();
+	private MainProperties properties = MainProperties.getInstance();
 	
 	/**
 	 * タイマ間隔 (ミリ秒)
@@ -97,9 +97,6 @@ public final class MainFrame extends JFrame {
 	private JMenuItem mntmRefresh;
 	private JPopupMenu popupMenu;
 	private Timer timer;
-	private Timer st0;
-	private Timer st1;
-	private Timer st2;
 	private JMenu mnSettings;
 	private JCheckBoxMenuItem chckbxmntmAlwaysOnTop;
 	private JCheckBoxMenuItem chckbxmntmAutoRefresh;
@@ -428,56 +425,18 @@ public final class MainFrame extends JFrame {
 		table.setDefaultRenderer(JLabel.class, new LabelRenderer());
 		scrollPane.setViewportView(table);
 		
+		/* カウントダウンタイマ */
 		panel = new JPanel();
 		contentPane.add(panel, BorderLayout.SOUTH);
-		
-		btnCountDown = new JButton("00:00");
-		btnCountDown.setFocusable(false);
-		btnCountDown.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				/* カウントダウンタイマ 1 */
-				if (st0 == null || !st0.isRunning()) {
-					st0 = new Timer(1000, new CountDownListener(btnCountDown, properties.getCountDown()));
-					st0.start();
-				} else {
-					st0.stop();
-					st0 = null;
-				}
-			}
-		});
+
+		btnCountDown = new TimerButton("timer1");
 		panel.setLayout(new GridLayout(0, 3, 0, 0));
 		panel.add(btnCountDown);
 		
-		btnCountDown1 = new JButton("00:00");
-		btnCountDown1.setFocusable(false);
-		btnCountDown1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				/* カウントダウンタイマ2 */
-				if (st1 == null || !st1.isRunning()) {
-					st1 = new Timer(1000, new CountDownListener(btnCountDown1, properties.getCountDown()));
-					st1.start();
-				} else {
-					st1.stop();
-					st1 = null;
-				}
-			}
-		});
+		btnCountDown1 = new TimerButton("timer2");
 		panel.add(btnCountDown1);
 		
-		btnCountDown2 = new JButton("00:00");
-		btnCountDown2.setFocusable(false);
-		btnCountDown2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				/* カウントダウンタイマ3 */
-				if (st2 == null || !st2.isRunning()) {
-					st2 = new Timer(1000, new CountDownListener(btnCountDown2, properties.getCountDown()));
-					st2.start();
-				} else {
-					st2.stop();
-					st2 = null;
-				}
-			}
-		});
+		btnCountDown2 = new TimerButton("timer3");
 		panel.add(btnCountDown2);
 		
 		/* 時刻更新タイマ */
