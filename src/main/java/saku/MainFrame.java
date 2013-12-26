@@ -42,7 +42,6 @@ import java.util.Vector;
 import javax.swing.JPopupMenu;
 import java.awt.event.MouseEvent;
 import javax.swing.ListSelectionModel;
-import java.awt.event.MouseMotionAdapter;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.JCheckBoxMenuItem;
@@ -51,6 +50,7 @@ import javax.swing.ButtonGroup;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JButton;
+import java.awt.GridLayout;
 
 /**
  * メインフレーム
@@ -410,20 +410,13 @@ public final class MainFrame extends JFrame {
 			}
 		};
 		
-		/* マウスオーバーで選択 */
-		table.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				int row = table.rowAtPoint(e.getPoint());
-				table.setRowSelectionInterval(row, row);
-			}
-		});
-		
 		/* クリックでタイムライン表示 */
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				popupMenu.show(e.getComponent(), e.getX(), e.getY());
+				if (table.getSelectedColumn() == 2) {
+					popupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 		});
 		
@@ -439,6 +432,7 @@ public final class MainFrame extends JFrame {
 		contentPane.add(panel, BorderLayout.SOUTH);
 		
 		btnCountDown = new JButton("00:00");
+		btnCountDown.setFocusable(false);
 		btnCountDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				/* カウントダウンタイマ 1 */
@@ -451,9 +445,11 @@ public final class MainFrame extends JFrame {
 				}
 			}
 		});
+		panel.setLayout(new GridLayout(0, 3, 0, 0));
 		panel.add(btnCountDown);
 		
 		btnCountDown1 = new JButton("00:00");
+		btnCountDown1.setFocusable(false);
 		btnCountDown1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				/* カウントダウンタイマ2 */
@@ -469,6 +465,7 @@ public final class MainFrame extends JFrame {
 		panel.add(btnCountDown1);
 		
 		btnCountDown2 = new JButton("00:00");
+		btnCountDown2.setFocusable(false);
 		btnCountDown2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/* カウントダウンタイマ3 */
@@ -585,7 +582,7 @@ public final class MainFrame extends JFrame {
 					Object[] dd = new Object[3];
 					dd[0] = e.getKey();
 					dd[1] = df.format(e.getValue().getTimeLine().get(0));
-					dd[2] = new JLabel();
+					dd[2] = new JLabel(e.getKey());
 					data[i] = dd;
 					i++;
 				}
