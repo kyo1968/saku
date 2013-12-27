@@ -1,4 +1,4 @@
-INSTALL: Saku
+README: Saku
 
 1. 起動方法
 saku-${version}.jar または saku.exe をダブルクリック。
@@ -16,4 +16,4 @@ Eclipse 4.3 (Kepler)
   - Maven Integration for Eclipse (推奨プラグイン)
   - EGit (推奨プラグイン)
 
--- Updated: 2013-12-18
+-- Updated: 2013-12-27
