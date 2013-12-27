@@ -780,6 +780,13 @@ public final class MainFrame extends JFrame {
 			tc.setPreferredWidth(max + 1);
 		}
 	}
+	
+	/**
+	 * ポップアップメニューを登録する。
+	 * 
+	 * @param component 登録先コンポーネント
+	 * @param popup ポップアップメニュー
+	 */
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
