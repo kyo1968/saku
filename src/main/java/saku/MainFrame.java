@@ -51,6 +51,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import java.awt.GridLayout;
+import javax.swing.JToolBar;
 
 /**
  * メインフレーム
@@ -120,6 +121,9 @@ public final class MainFrame extends JFrame {
 	private JButton btnCountDown;
 	private JButton btnCountDown1;
 	private JButton btnCountDown2;
+	private JPopupMenu popupMenu_1;
+	private JCheckBoxMenuItem chckbxmntmHideMenuItem;
+	private JToolBar toolBar;
 	
 	/**
 	 * メインメソッド
@@ -199,8 +203,48 @@ public final class MainFrame extends JFrame {
 		setBounds(100, 100, 450, 300);
 		setAlwaysOnTop(properties.isAlwaysOnTop());
 		
+		popupMenu_1 = new JPopupMenu();
+		addPopup(this, popupMenu_1);
+		
+		chckbxmntmHideMenuItem = new JCheckBoxMenuItem("Hide Menubar");
+		chckbxmntmHideMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JCheckBoxMenuItem c = (JCheckBoxMenuItem)e.getSource();
+				if (c.isSelected()) {
+					toolBar.setVisible(false);	/* メニューバーを非表示 */
+				} else {
+					toolBar.setVisible(true);		/* メニューバーを表示 */
+				}
+			}
+		});
+		popupMenu_1.add(chckbxmntmHideMenuItem);
+		
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		
+		popupMenu = new JPopupMenu();
+		popupMenu.addPopupMenuListener(new PopupMenuListener() {
+			public void popupMenuCanceled(PopupMenuEvent e) {
+			}
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				popupMenu.removeAll();
+			}
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				populateMenuItem();
+			}
+		});
+		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		toolBar = new JToolBar();
+		toolBar.setBorder(new EmptyBorder(0, 0, 0, 0));
+		contentPane.add(toolBar, BorderLayout.NORTH);
+		toolBar.setFloatable(false);
+		
 		menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
+		menuBar.setBorderPainted(false);
+		menuBar.setBorder(null);
+		toolBar.add(menuBar);
 		
 		mnMain = new JMenu("Main");
 		menuBar.add(mnMain);
@@ -325,68 +369,51 @@ public final class MainFrame extends JFrame {
 		});
 		buttonGroup.add(radioButtonMenuItem);
 		mnOpacity.add(radioButtonMenuItem);
-
-		radioButtonMenuItem_1 = new JRadioButtonMenuItem("80%");
-		radioButtonMenuItem_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				properties.setOpacity(MainProperties.OPACITY_80);
-				setOpacity(.8f);
-			}
-		});
-		buttonGroup.add(radioButtonMenuItem_1);
-		mnOpacity.add(radioButtonMenuItem_1);
 		
-		radioButtonMenuItem_2 = new JRadioButtonMenuItem("50%");
-		radioButtonMenuItem_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				properties.setOpacity(MainProperties.OPACITY_50);
-				setOpacity(.5f);
-			}
-		});
-		buttonGroup.add(radioButtonMenuItem_2);
-		mnOpacity.add(radioButtonMenuItem_2);
-		
-		mnSurface = new JMenu("Surface");
-		mnSettings.add(mnSurface);
-		
-		rdbtnmntmNormal = new JRadioButtonMenuItem("Normal");
-		rdbtnmntmNormal.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				properties.setSurfaceStyle(MainProperties.STYLE_NORMAL);
-				table.setForeground(Color.BLACK);
-				table.setBackground(Color.WHITE);
-			}
-		});
-		buttonGroup_2.add(rdbtnmntmNormal);
-		mnSurface.add(rdbtnmntmNormal);
-		
-		rdbtnmntmReverse = new JRadioButtonMenuItem("Reverse");
-		rdbtnmntmReverse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				properties.setSurfaceStyle(MainProperties.STYLE_REVERSE);
-				table.setForeground(Color.WHITE);
-				table.setBackground(Color.BLACK);
-			}
-		});
-		buttonGroup_2.add(rdbtnmntmReverse);
-		mnSurface.add(rdbtnmntmReverse);
-		
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		
-		popupMenu = new JPopupMenu();
-		popupMenu.addPopupMenuListener(new PopupMenuListener() {
-			public void popupMenuCanceled(PopupMenuEvent e) {
-			}
-			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-				popupMenu.removeAll();
-			}
-			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				populateMenuItem();
-			}
-		});
-		contentPane.setLayout(new BorderLayout(0, 0));
+				radioButtonMenuItem_1 = new JRadioButtonMenuItem("80%");
+				radioButtonMenuItem_1.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						properties.setOpacity(MainProperties.OPACITY_80);
+						setOpacity(.8f);
+					}
+				});
+				buttonGroup.add(radioButtonMenuItem_1);
+				mnOpacity.add(radioButtonMenuItem_1);
+				
+				radioButtonMenuItem_2 = new JRadioButtonMenuItem("50%");
+				radioButtonMenuItem_2.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						properties.setOpacity(MainProperties.OPACITY_50);
+						setOpacity(.5f);
+					}
+				});
+				buttonGroup.add(radioButtonMenuItem_2);
+				mnOpacity.add(radioButtonMenuItem_2);
+				
+				mnSurface = new JMenu("Surface");
+				mnSettings.add(mnSurface);
+				
+				rdbtnmntmNormal = new JRadioButtonMenuItem("Normal");
+				rdbtnmntmNormal.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						properties.setSurfaceStyle(MainProperties.STYLE_NORMAL);
+						table.setForeground(Color.BLACK);
+						table.setBackground(Color.WHITE);
+					}
+				});
+				buttonGroup_2.add(rdbtnmntmNormal);
+				mnSurface.add(rdbtnmntmNormal);
+				
+				rdbtnmntmReverse = new JRadioButtonMenuItem("Reverse");
+				rdbtnmntmReverse.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						properties.setSurfaceStyle(MainProperties.STYLE_REVERSE);
+						table.setForeground(Color.WHITE);
+						table.setBackground(Color.BLACK);
+					}
+				});
+				buttonGroup_2.add(rdbtnmntmReverse);
+				mnSurface.add(rdbtnmntmReverse);
 		//contentPane.add(popupMenu, BorderLayout.NORTH);
 		
 		scrollPane = new JScrollPane();
@@ -424,8 +451,6 @@ public final class MainFrame extends JFrame {
 		table.setFont(new Font("MS PGothic", Font.BOLD, 12));
 		table.setDefaultRenderer(JLabel.class, new LabelRenderer());
 		scrollPane.setViewportView(table);
-		
-		/* カウントダウンタイマ */
 		panel = new JPanel();
 		contentPane.add(panel, BorderLayout.SOUTH);
 
@@ -491,6 +516,11 @@ public final class MainFrame extends JFrame {
 			table.setForeground(Color.WHITE);
 			table.setBackground(Color.BLACK);
 			break;
+		}
+		
+		/* メニューバー非表示の初期設定 */
+		if (properties.isHideMenuBar()) {
+			chckbxmntmHideMenuItem.setSelected(true);
 		}
 
 		/* テーブル初期化 */
@@ -749,5 +779,22 @@ public final class MainFrame extends JFrame {
 			/* 最大幅を列幅に設定 */
 			tc.setPreferredWidth(max + 1);
 		}
+	}
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
 	}
 }

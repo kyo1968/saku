@@ -127,6 +127,16 @@ public final class MainProperties  extends BaseProperties {
 	private static final String FRAME_HEIGHT = "frameHeight";
 	
 	/**
+	 * メニューバーの非表示
+	 */
+	private boolean hideMenuBar = false;
+	
+	/**
+	 * メニューバー非表示のプロパティ名
+	 */
+	private static final String HIDE_MENUBAR = "hideMenuBar";
+		
+	/**
 	 * 不透明度: 100%
 	 */
 	public static final int OPACITY_100 = 0;
@@ -405,6 +415,24 @@ public final class MainProperties  extends BaseProperties {
 	}
 	
 	/**
+	 * メニューバーの非表示フラグを確認する。
+	 * 
+	 * @return メニューバー非表示フラグ
+	 */
+	public boolean isHideMenuBar() {
+		return hideMenuBar;
+	}
+	
+	/**
+	 * メニューバーの非表示フラグを設定する。
+	 * 
+	 * @param hideMenuBar メニューバー非表示フラグ
+	 */
+	public void setHideMenuBar(boolean hideMenuBar) {
+		this.hideMenuBar = hideMenuBar;
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -419,6 +447,7 @@ public final class MainProperties  extends BaseProperties {
 			setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
 			setAlertSound(getBoolean(ALERT_SOUND, false));
 			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
+			setHideMenuBar(getBoolean(HIDE_MENUBAR, false));
 			
 			/* カウントダウンプロパティの検索 */
 			for (Entry<Object, Object> e : properties.entrySet()) {
@@ -451,6 +480,7 @@ public final class MainProperties  extends BaseProperties {
 			properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
 			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
 			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
+			properties.put(HIDE_MENUBAR, Boolean.toString(isHideMenuBar()));
 			
 			/* カウントダウンプロパティの保存 */
 			for (Entry<String, Integer> e : countDown.entrySet()) {
