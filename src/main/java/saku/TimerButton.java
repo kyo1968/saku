@@ -1,9 +1,11 @@
 package saku;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -32,6 +34,16 @@ public final class TimerButton extends JButton {
 	 * タイマ名
 	 */
 	private String name = null;
+	
+	/**
+	 * デフォルト表示色
+	 */
+	private Color defaultColor;
+	
+	/**
+	 * 赤色表示にする残り時間(秒)
+	 */
+	private int MINLEFT = 10;
 	
 	/**
 	 * コンストラクタ
@@ -63,7 +75,7 @@ public final class TimerButton extends JButton {
 		popupMenu.addSeparator();
 		
 		/* カウンタリセット */
-		JMenuItem item0 = new JMenuItem("Reset");
+		JMenuItem item0 = new JMenuItem("Reset Timer");
 		item0.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -73,7 +85,7 @@ public final class TimerButton extends JButton {
 		popupMenu.add(item0);
 
 		/* 時間設定ダイアログ */
-		JMenuItem item1 = new JMenuItem("Settings");
+		JMenuItem item1 = new JMenuItem("Setting");
 		item1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -82,6 +94,8 @@ public final class TimerButton extends JButton {
 		});
 		popupMenu.add(item1);
 		addPopup(popupMenu);
+		
+		defaultColor = getForeground();
 		
 		/* タイマをリセット */
 		resetTimer();
@@ -105,6 +119,9 @@ public final class TimerButton extends JButton {
 					t.stop();
 				} else {
 					/* 残り時間を表示 */
+					if (c < MINLEFT) {	/* 10秒切ると赤色 */
+						setForeground(Color.red);
+					}
 					setText(getTimeString(c));
 					c --;
 				} 
@@ -132,6 +149,7 @@ public final class TimerButton extends JButton {
 	private void resetTimer() {
 		/* タイマを停止して表示をクリア */
 		stopTimer();
+		setForeground(defaultColor);
 		setText(getTimeString(MainProperties.getInstance().getCountDown(name)));
 	}
 		
