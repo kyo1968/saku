@@ -35,13 +35,10 @@ abstract public class BaseProperties {
 	 * プロパティファイルを読み込む。
 	 * 
 	 * @param file プロパティファイル名
+	 * @throws FileNotFoundException INI file error.
 	 */
-	public void load(String file) {
-		try {
-			load(new FileInputStream(new File(file))); 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	public void load(String file) throws FileNotFoundException {
+		load(new FileInputStream(new File(file))); 
 	}
 	
 	/**
@@ -67,13 +64,10 @@ abstract public class BaseProperties {
 	 * プロパティファイルを保存する。
 	 * 
 	 * @param file プロパティファイル名
+	 * @throws FileNotFoundException INI file error.
 	 */
-	public void save(String file) {
-		try {
-			save(new FileOutputStream(new File(file)));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	public void save(String file) throws FileNotFoundException {
+		save(new FileOutputStream(new File(file)));
 	}
 	
 	/**

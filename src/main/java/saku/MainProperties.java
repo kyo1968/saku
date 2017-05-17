@@ -1,5 +1,6 @@
 package saku;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,6 +86,16 @@ public final class MainProperties  extends BaseProperties {
 	 * カウントダウンタイマのプロパティ名
 	 */
 	public static final String COUNT_DOWN = "countDown";
+
+	/**
+	 * タイムラインの表示数
+	 */
+	private int timeLines = 10;
+	
+	/**
+	 * タイムライン表示数のプロパティ名
+	 */
+	public static final String T_LINES = "timeLines";
 	
 	/**
 	 * ウィンドウ X位置
@@ -195,7 +206,11 @@ public final class MainProperties  extends BaseProperties {
 	 * コンストラクタ
 	 */
 	private MainProperties() {
-		load(fileName);
+		try {
+			load(fileName);
+		} catch (FileNotFoundException e) {
+			System.err.println("INI file not found. Creating...");
+		}
 	}
 	
 	/**
@@ -279,6 +294,24 @@ public final class MainProperties  extends BaseProperties {
 	 */
 	public void setPriorNotice(int priorNotice) {
 		this.priorNotice = priorNotice;
+	}
+	
+	/**
+	 * タイムラインの表示数を設定する．
+	 * 
+	 * @return タイムライン表示数
+	 */
+	public int getTimeLines() {
+		return timeLines;
+	}
+	
+	/**
+	 * タイムラインの表示数を取得する．
+	 * 
+	 * @param timeLines タイムライン表示数
+	 */
+	public void setTimeLines(int timeLines) {
+		this.timeLines = timeLines;
 	}
 	
 	/**
@@ -448,6 +481,7 @@ public final class MainProperties  extends BaseProperties {
 			setAlertSound(getBoolean(ALERT_SOUND, false));
 			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
 			setHideMenuBar(getBoolean(HIDE_MENUBAR, false));
+			setTimeLines(getInt(T_LINES, 10));
 			
 			/* カウントダウンプロパティの検索 */
 			for (Entry<Object, Object> e : properties.entrySet()) {
@@ -462,7 +496,12 @@ public final class MainProperties  extends BaseProperties {
 	 * プロパティファイルを保存する。
 	 */
 	public void save() {
-		save(fileName);
+		try {
+			save(fileName);
+		} catch (FileNotFoundException e) {
+			System.out.println("Cannot write INI file.");
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -481,6 +520,7 @@ public final class MainProperties  extends BaseProperties {
 			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
 			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
 			properties.put(HIDE_MENUBAR, Boolean.toString(isHideMenuBar()));
+			properties.put(T_LINES, Integer.toString(getTimeLines()));
 			
 			/* カウントダウンプロパティの保存 */
 			for (Entry<String, Integer> e : countDown.entrySet()) {

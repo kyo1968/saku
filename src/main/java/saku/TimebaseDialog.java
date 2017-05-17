@@ -166,7 +166,7 @@ public final class TimebaseDialog extends JDialog {
 		
 		try {
 			/* 設定ファイルの読み込み */
-			if (mgr.load()) {
+			if (mgr.load(MainProperties.getInstance().getTimeLines())) {
 				Map<String, Timebase> tml = mgr.getTimebase();
 				/* テーブルモデルに設定 */
 				for (Entry<String, Timebase> e : tml.entrySet()) {

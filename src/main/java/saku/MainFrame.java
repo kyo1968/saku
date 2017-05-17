@@ -213,7 +213,7 @@ public final class MainFrame extends JFrame {
 				if (c.isSelected()) {
 					toolBar.setVisible(false);	/* メニューバーを非表示 */
 				} else {
-					toolBar.setVisible(true);		/* メニューバーを表示 */
+					toolBar.setVisible(true);	/* メニューバーを表示 */
 				}
 			}
 		});
@@ -562,7 +562,7 @@ public final class MainFrame extends JFrame {
 			TimebaseManager mgr = TimebaseManager.getInstance();
 
 			/* 設定をロード */
-			if (mgr.load()) {
+			if (mgr.load(properties.getTimeLines())) {
 				Map<String, Timebase> m = mgr.getTimebase();
 				Object[][] data = new Object[m.size()][];
 				
@@ -577,7 +577,7 @@ public final class MainFrame extends JFrame {
 				}
 				
 				/* モデルを設定*/
-				DefaultTableModel model = new DefaultTableModel(data, new String[] {"Location", "Estimated Spawn Time", ""}) {
+				DefaultTableModel model = new DefaultTableModel(data, new String[] {"Location", "Estimated Spawn Time",""}) {
 					private static final long serialVersionUID = -8462179571190270614L;
 
 					@Override
@@ -675,7 +675,7 @@ public final class MainFrame extends JFrame {
 		for (Vector<Object> e : (Vector<Vector<Object>>)model.getDataVector()) {
 			String key = (String)e.get(0);
 			Timebase tb = mgr.getTimebase(key);
-			tb.refresh(c);
+			tb.refresh(c, properties.getTimeLines());
 			
 			/* アラート表示 */
 			Date co = tb.getTimeLine().get(0);
@@ -730,7 +730,8 @@ public final class MainFrame extends JFrame {
 					
 					int i = 1;
 					for (Date date : line) {
-						JMenuItem item = new JMenuItem(i + ") " + df.format(date));
+						String fmt = String.format("%02d) %s", i , df.format(date));
+						JMenuItem item = new JMenuItem(fmt);
 						popupMenu.add(item);
 						i++;
 					}

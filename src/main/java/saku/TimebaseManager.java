@@ -93,23 +93,25 @@ public class TimebaseManager {
 	/**
 	 * タイムベース設定を読み込む。
 	 * 
+	 * @param timeLines タイムライン数
 	 * @return 成功時はtrue
 	 * @throws IOException 入出力エラー
 	 * @throws ParseException ファイル解析エラー
 	 */
-	public boolean load() throws IOException, ParseException {
-		return(load(fileName));
+	public boolean load(int timeLines) throws IOException, ParseException {
+		return(load(fileName, timeLines));
 	}
 	
 	/**
 	 * タイムベース設定を読み込む。
 	 * 
 	 * @param file 保存ファイル名
+	 * @param timeLines タイムライン数
 	 * @return 成功時はtrue
 	 * @throws IOException 入出力エラー
 	 * @throws ParseException ファイル解析エラー
 	 */
-	private boolean load(String file) throws IOException, ParseException {
+	private boolean load(String file, int timeLines) throws IOException, ParseException {
 		
 		/* マネージャを初期化 */
 		clear();
@@ -134,7 +136,7 @@ public class TimebaseManager {
 				tb.setRespawn(Integer.parseInt(respawn));
 				tb.setBaseTime(df.parse(timebase));
 				tb.setAlert(true);
-				tb.refresh(c);
+				tb.refresh(c, timeLines);
 				
 				putTimebase(name, tb);
 			}

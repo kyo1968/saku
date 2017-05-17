@@ -26,11 +26,6 @@ public final class Timebase {
 	private boolean alert = false;
 	
 	/**
-	 * タイムラインの長さ
-	 */
-	private static final int LINECOUNT = 30;
-	
-	/**
 	 * 現在時刻からのタイムライン
 	 */
 	List<Date> timeLine;
@@ -39,8 +34,9 @@ public final class Timebase {
 	 * タイムラインを計算する。
 	 * 
 	 * @param current 現在時刻
+	 * @param timeLines 計算数
 	 */
-	public void refresh(Date current) {
+	public void refresh(Date current, int timeLines) {
 		long s = base.getTime();		/* 基準時刻 */
 		long c = current.getTime();		/* 現在時刻 */
 		long r = respawn * 1000;		/* リポップ間隔 */
@@ -63,9 +59,11 @@ public final class Timebase {
 		
 		/* タイムラインの設定 */
 		List<Date> tl = new ArrayList<Date>();
-		for (int i = 0; i < LINECOUNT; i++) {
-			tl.add(new Date(t));
-			t += r;
+		if (timeLines > 0) { 
+			for (int i = 0; i < timeLines; i++) {
+				tl.add(new Date(t));
+				t += r;
+			}
 		}
 
 		timeLine = tl;
