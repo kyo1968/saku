@@ -49,7 +49,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.ButtonGroup;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.JButton;
 import java.awt.GridLayout;
 import javax.swing.JToolBar;
 
@@ -118,9 +117,9 @@ public final class MainFrame extends JFrame {
 	private JRadioButtonMenuItem rdbtnmntmReverse;
 	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
 	private JPanel panel;
-	private JButton btnCountDown;
-	private JButton btnCountDown1;
-	private JButton btnCountDown2;
+	private TimerButton btnCountDown;
+	private TimerButton btnCountDown1;
+	private TimerButton btnCountDown2;
 	private JPopupMenu popupMenu_1;
 	private JCheckBoxMenuItem chckbxmntmHideMenuItem;
 	private JToolBar toolBar;

@@ -52,6 +52,10 @@ public final class TimebaseDialog extends JDialog {
 	 * コンポーネント類
 	 */
 	private final JPanel contentPanel = new JPanel();
+	
+	/**
+	 * テーブル
+	 */
 	private JTable table;
 
 	/**

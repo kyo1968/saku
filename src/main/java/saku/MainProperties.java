@@ -83,9 +83,19 @@ public final class MainProperties  extends BaseProperties {
 	private Map<String, Integer> countDown = new HashMap<String, Integer>();
 	
 	/**
+	 * アクションキー
+	 */
+	private Map<String, String> actionKeys = new HashMap<String, String>();
+	
+	/**
 	 * カウントダウンタイマのプロパティ名
 	 */
 	public static final String COUNT_DOWN = "countDown";
+
+	/**
+	 * アクションキーのプロパティ名
+	 */
+	public static final String ACTION_KEY = "actionKey";
 
 	/**
 	 * タイムラインの表示数
@@ -358,6 +368,45 @@ public final class MainProperties  extends BaseProperties {
 	}
 	
 	/**
+	 * アクションキーリストを取得する．
+	 * 
+	 * @return アクションキーリスト
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, String> getActionKeys() {
+		return (Map<String, String>) ((HashMap<String, String>) actionKeys).clone();
+	}
+	
+	/**
+	 * アクションキーを取得する．
+	 * 
+	 * @return アクションキー
+	 */
+	public String getActionKey(String name) {
+		String c = actionKeys.get(name + "." + ACTION_KEY);
+
+		/* 未登録のときはnull */
+		if (c != null) {
+			return c;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * アクションキーを設定する．
+	 * 
+	 * @param key アクションキー
+	 */
+	public void setActionKey(String name, String key) {
+		if (key == null){
+			actionKeys.remove(name + "." + ACTION_KEY);
+		} else {
+			actionKeys.put(name + "." + ACTION_KEY, key);
+		}
+	}
+	
+	/**
 	 * ウィンドウのX位置を取得する。
 	 * 
 	 * @return X位置
@@ -470,26 +519,28 @@ public final class MainProperties  extends BaseProperties {
 	 */
 	@Override
 	protected void loadProperties() {
-			setAlwaysOnTop(getBoolean(ALWAYS_ON_TOP, true));
-			setAutoRefresh(getBoolean(AUTO_REFRESH, true));
-			setOpacity(getInt(OPACITY, OPACITY_100));
-			setX(getInt(LOC_X, 0));
-			setY(getInt(LOC_Y, 0));
-			setWidth(getInt(FRAME_WIDTH, -1));
-			setHeight(getInt(FRAME_HEIGHT, -1));
-			setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
-			setAlertSound(getBoolean(ALERT_SOUND, false));
-			setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
-			setHideMenuBar(getBoolean(HIDE_MENUBAR, false));
-			setTimeLines(getInt(T_LINES, 10));
-			
-			/* カウントダウンプロパティの検索 */
-			for (Entry<Object, Object> e : properties.entrySet()) {
-				String key = (String)e.getKey();
-				if (key.endsWith("." + COUNT_DOWN)) {
-					countDown.put(key, getInt(key, COUNTDOWN));		
-				}
+		setAlwaysOnTop(getBoolean(ALWAYS_ON_TOP, true));
+		setAutoRefresh(getBoolean(AUTO_REFRESH, true));
+		setOpacity(getInt(OPACITY, OPACITY_100));
+		setX(getInt(LOC_X, 0));
+		setY(getInt(LOC_Y, 0));
+		setWidth(getInt(FRAME_WIDTH, -1));
+		setHeight(getInt(FRAME_HEIGHT, -1));
+		setPriorNotice(getInt(PRIOR_NOTICE, PRIOR_MIN1));
+		setAlertSound(getBoolean(ALERT_SOUND, false));
+		setSurfaceStyle(getInt(SURFACE_STYLE, STYLE_NORMAL));
+		setHideMenuBar(getBoolean(HIDE_MENUBAR, false));
+		setTimeLines(getInt(T_LINES, 10));
+		
+		/* タイマーボタンプロパティの検索 */
+		for (Entry<Object, Object> e : properties.entrySet()) {
+			String key = (String)e.getKey();
+			if (key.endsWith("." + COUNT_DOWN)) {
+				countDown.put(key, getInt(key, COUNTDOWN));		
+			} else if (key.endsWith("." + ACTION_KEY)) {
+				actionKeys.put(key, getString(key, null));		
 			}
+		}
 	}
 	
 	/**
@@ -509,24 +560,34 @@ public final class MainProperties  extends BaseProperties {
 	 */
 	@Override
 	protected void storeProperties() {
-			properties.put(ALWAYS_ON_TOP, Boolean.toString(isAlwaysOnTop()));
-			properties.put(AUTO_REFRESH, Boolean.toString(isAutoRefresh()));
-			properties.put(OPACITY, Integer.toString(getOpacity()));
-			properties.put(LOC_X, Integer.toString(getX()));
-			properties.put(LOC_Y, Integer.toString(getY()));
-			properties.put(FRAME_WIDTH, Integer.toString(getWidth()));
-			properties.put(FRAME_HEIGHT, Integer.toString(getHeight()));
-			properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
-			properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
-			properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
-			properties.put(HIDE_MENUBAR, Boolean.toString(isHideMenuBar()));
-			properties.put(T_LINES, Integer.toString(getTimeLines()));
-			
-			/* カウントダウンプロパティの保存 */
-			for (Entry<String, Integer> e : countDown.entrySet()) {
-				String key = e.getKey();
-				Integer value = e.getValue();
+		properties.put(ALWAYS_ON_TOP, Boolean.toString(isAlwaysOnTop()));
+		properties.put(AUTO_REFRESH, Boolean.toString(isAutoRefresh()));
+		properties.put(OPACITY, Integer.toString(getOpacity()));
+		properties.put(LOC_X, Integer.toString(getX()));
+		properties.put(LOC_Y, Integer.toString(getY()));
+		properties.put(FRAME_WIDTH, Integer.toString(getWidth()));
+		properties.put(FRAME_HEIGHT, Integer.toString(getHeight()));
+		properties.put(PRIOR_NOTICE, Integer.toString(getPriorNotice()));
+		properties.put(ALERT_SOUND, Boolean.toString(isAlertSound()));
+		properties.put(SURFACE_STYLE, Integer.toString(getSurfaceStyle()));
+		properties.put(HIDE_MENUBAR, Boolean.toString(isHideMenuBar()));
+		properties.put(T_LINES, Integer.toString(getTimeLines()));
+		
+		/* タイマーボタンプロパティの保存 */
+		for (Entry<String, Integer> e : countDown.entrySet()) {
+			String key = e.getKey();
+			Integer value = e.getValue();
+			if (key != null && value != null) {
 				properties.put(key, Integer.toString(value));
 			}
+		}
+		
+		for (Entry<String, String> e : actionKeys.entrySet()) {
+			String key = e.getKey();
+			String value = e.getValue();
+			if (key != null && value != null) {
+				properties.put(key, value);
+			}
+		}
 	}
 }
